@@ -1,107 +1,184 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+# /// script
+# requires-python = ">=3.10"
+# dependencies = [
+#     "google-genai>=1.0.0",
+#     "pillow>=10.0.0",
+# ]
+# ///
 """
-秋芝餐厅品牌物料生成脚本
-使用 Gemini API 生成符合品牌视觉规范的图片
+Generate images using Google's Nano Banana Pro (Gemini 3 Pro Image) API.
+
+Usage:
+    uv run generate_image.py --prompt "your image description" --filename "output.png" [--resolution 1K|2K|4K] [--api-key KEY]
+
+Multi-image editing (up to 14 images):
+    uv run generate_image.py --prompt "combine these images" --filename "output.png" -i img1.png -i img2.png -i img3.png
 """
 
+import argparse
 import os
 import sys
-import json
-import google.generativeai as genai
-from PIL import Image
-import io
+from pathlib import Path
 
-# 设置标准输出编码，解决Windows控制台乱码问题
-if os.name == 'nt':
-    import io
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
-try:
-    import google.generativeai as genai
-except ImportError:
-    print("错误：未安装 google-generativeai，请运行：pip install google-gemini")
-    sys.exit(1)
+def get_api_key(provided_key: str | None) -> str | None:
+    """Get API key from argument first, then environment."""
+    if provided_key:
+        return provided_key
+    return os.environ.get("GEMINI_API_KEY")
 
-# 从环境变量读取 API Key
-api_key = os.getenv("GOOGLE_API_KEY")
-if not api_key:
-    print("错误：请设置 GOOGLE_API_KEY 环境变量")
-    sys.exit(1)
 
-# 初始化模型
-genai.configure(api_key=api_key)
-model = genai.GenerativeModel('gemini-2.0-flash-exp-image-generation')
+def main():
+    parser = argparse.ArgumentParser(
+        description="Generate images using Nano Banana Pro (Gemini 3 Pro Image)"
+    )
+    parser.add_argument(
+        "--prompt", "-p",
+        required=True,
+        help="Image description/prompt"
+    )
+    parser.add_argument(
+        "--filename", "-f",
+        required=True,
+        help="Output filename (e.g., sunset-mountains.png)"
+    )
+    parser.add_argument(
+        "--input-image", "-i",
+        action="append",
+        dest="input_images",
+        metavar="IMAGE",
+        help="Input image path(s) for editing/composition. Can be specified multiple times (up to 14 images)."
+    )
+    parser.add_argument(
+        "--resolution", "-r",
+        choices=["1K", "2K", "4K"],
+        default="1K",
+        help="Output resolution: 1K (default), 2K, or 4K"
+    )
+    parser.add_argument(
+        "--api-key", "-k",
+        help="Gemini API key (overrides GEMINI_API_KEY env var)"
+    )
 
-# 品牌视觉关键词（始终包含在 prompt 中）
-BRAND_STYLE = """ 
-Style requirements:
-- 3D cartoon gourd mascot with mint green color (#5DDEB5) and white stripes
-- Fresh, healthy, youthful, modern aesthetic
-- High-quality 3D rendering with soft lighting
-- Clean, minimalist background
-- Appetizing food presentation if applicable
-- Friendly and inviting atmosphere
-"""
+    args = parser.parse_args()
 
-def generate_image(prompt, output_path="./output", reference_images=None):
-    """
-    生成符合品牌规范的图像
-    
-    Args:
-        prompt (str): 用户的创意描述
-        output_path (str): 输出路径
-        reference_images (list): 参考图片路径列表
-    """
+    # Get API key
+    api_key = get_api_key(args.api_key)
+    if not api_key:
+        print("Error: No API key provided.", file=sys.stderr)
+        print("Please either:", file=sys.stderr)
+        print("  1. Provide --api-key argument", file=sys.stderr)
+        print("  2. Set GEMINI_API_KEY environment variable", file=sys.stderr)
+        sys.exit(1)
+
+    # Import here after checking API key to avoid slow import on error
+    from google import genai
+    from google.genai import types
+    from PIL import Image as PILImage
+
+    # Initialise client
+    client = genai.Client(api_key=api_key)
+
+    # Set up output path
+    output_path = Path(args.filename)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    # Load input images if provided (up to 14 supported by Nano Banana Pro)
+    input_images = []
+    output_resolution = args.resolution
+    if args.input_images:
+        if len(args.input_images) > 14:
+            print(f"Error: Too many input images ({len(args.input_images)}). Maximum is 14.", file=sys.stderr)
+            sys.exit(1)
+
+        max_input_dim = 0
+        for img_path in args.input_images:
+            try:
+                img = PILImage.open(img_path)
+                input_images.append(img)
+                print(f"Loaded input image: {img_path}")
+
+                # Track largest dimension for auto-resolution
+                width, height = img.size
+                max_input_dim = max(max_input_dim, width, height)
+            except Exception as e:
+                print(f"Error loading input image '{img_path}': {e}", file=sys.stderr)
+                sys.exit(1)
+
+        # Auto-detect resolution from largest input if not explicitly set
+        if args.resolution == "1K" and max_input_dim > 0:  # Default value
+            if max_input_dim >= 3000:
+                output_resolution = "4K"
+            elif max_input_dim >= 1500:
+                output_resolution = "2K"
+            else:
+                output_resolution = "1K"
+            print(f"Auto-detected resolution: {output_resolution} (from max input dimension {max_input_dim})")
+
+    # Build contents (images first if editing, prompt only if generating)
+    if input_images:
+        contents = [*input_images, args.prompt]
+        img_count = len(input_images)
+        print(f"Processing {img_count} image{'s' if img_count > 1 else ''} with resolution {output_resolution}...")
+    else:
+        contents = args.prompt
+        print(f"Generating image with resolution {output_resolution}...")
+
     try:
-        # 组合最终提示词
-        final_prompt = f"{prompt}\n\n{BRAND_STYLE}"
-        
-        print(f"正在生成图像...")
-        print(f"提示词: {final_prompt[:100]}...")
-        
-        # 准备参考图片
-        images = []
-        if reference_images:
-            for img_path in reference_images:
-                if os.path.exists(img_path):
-                    with Image.open(img_path) as img:
-                        img_bytes = io.BytesIO()
-                        img.save(img_bytes, format='PNG')
-                        img_bytes.seek(0)
-                        images.append(Image.open(img_bytes))
-        
-        # 调用模型生成图像
-        response = model.generate_content([
-            f"Generate an image based on the following description: {final_prompt}",
-            *images
-        ])
-        
-        # 保存生成的图像
-        os.makedirs(output_path, exist_ok=True)
-        
-        # 这里简化处理，实际的 Gemini API 可能有不同的响应格式
-        # 在实际应用中，需要根据 API 的实际响应格式来处理
-        if hasattr(response, 'images'):
-            for i, img in enumerate(response.images):
-                img_path = os.path.join(output_path, f"qiuzhi_creative_{i+1}.png")
-                img.save(img_path)
-                print(f"图像已保存到: {img_path}")
+        response = client.models.generate_content(
+            model="gemini-3-pro-image-preview",
+            contents=contents,
+            config=types.GenerateContentConfig(
+                response_modalities=["TEXT", "IMAGE"],
+                image_config=types.ImageConfig(
+                    image_size=output_resolution
+                )
+            )
+        )
+
+        # Process response and convert to PNG
+        image_saved = False
+        for part in response.parts:
+            if part.text is not None:
+                print(f"Model response: {part.text}")
+            elif part.inline_data is not None:
+                # Convert inline data to PIL Image and save as PNG
+                from io import BytesIO
+
+                # inline_data.data is already bytes, not base64
+                image_data = part.inline_data.data
+                if isinstance(image_data, str):
+                    # If it's a string, it might be base64
+                    import base64
+                    image_data = base64.b64decode(image_data)
+
+                image = PILImage.open(BytesIO(image_data))
+
+                # Ensure RGB mode for PNG (convert RGBA to RGB with white background if needed)
+                if image.mode == 'RGBA':
+                    rgb_image = PILImage.new('RGB', image.size, (255, 255, 255))
+                    rgb_image.paste(image, mask=image.split()[3])
+                    rgb_image.save(str(output_path), 'PNG')
+                elif image.mode == 'RGB':
+                    image.save(str(output_path), 'PNG')
+                else:
+                    image.convert('RGB').save(str(output_path), 'PNG')
+                image_saved = True
+
+        if image_saved:
+            full_path = output_path.resolve()
+            print(f"\nImage saved: {full_path}")
+            # OpenClaw parses MEDIA tokens and will attach the file on supported providers.
+            print(f"MEDIA: {full_path}")
         else:
-            print("警告：API 响应中未包含图像数据")
-            print(f"响应内容: {response}")
+            print("Error: No image was generated in the response.", file=sys.stderr)
+            sys.exit(1)
 
     except Exception as e:
-        print(f"图像生成过程中发生错误: {str(e)}")
+        print(f"Error generating image: {e}", file=sys.stderr)
+        sys.exit(1)
+
 
 if __name__ == "__main__":
-    # 示例用法
-    if len(sys.argv) < 2:
-        print("用法: python generate_image.py \"<创意描述>\" [输出路径] [参考图片路径1] [参考图片路径2] ...")
-        sys.exit(1)
-    
-    user_prompt = sys.argv[1]
-    output_path = sys.argv[2] if len(sys.argv) > 2 else "./output"
-    reference_images = sys.argv[3:] if len(sys.argv) > 3 else []
-    
-    generate_image(user_prompt, output_path, reference_images)
+    main()

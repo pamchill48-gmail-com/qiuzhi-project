@@ -20,11 +20,11 @@ No installation required if you use GitHub Codespaces!
 2.  **在 Codespaces 中打开**
     **Open in Codespaces**
     - 点击绿色的 **Code** 按钮。
-    - Click the green **Code** button.
+      Click the green **Code** button.
     - 切换到 **Codespaces** 标签页。
-    - Switch to the **Codespaces** tab.
+      Switch to the **Codespaces** tab.
     - 点击 **Create codespace on main**。
-    - Click **Create codespace on main**.
+      Click **Create codespace on main**.
 
 3.  **运行演示**
     **Run the Demo**
@@ -49,7 +49,7 @@ No installation required if you use GitHub Codespaces!
 To run this project, you need:
 
 -   **Google Gemini API Key**: 可在 [Google AI Studio](https://aistudio.google.com/) 免费获取。
--   **Google Gemini API Key**: Get one for free at [Google AI Studio](https://aistudio.google.com/).
+    **Google Gemini API Key**: Get one for free at [Google AI Studio](https://aistudio.google.com/).
 
 ---
 

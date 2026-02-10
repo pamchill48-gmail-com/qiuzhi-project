@@ -41,3 +41,18 @@ The application is organized into the following clear sections:
     Render to graphical format (e.g., Mermaid diagram, PNG).
 -   **输出 (Output)**：可下载文件。
     Downloadable file.
+
+---
+
+## 📊 逻辑展示 (Logic Visualization)
+
+### 天气技能逻辑流 (Weather Skill Logic Flow)
+```mermaid
+graph TD
+    A[Start] --> B[Check Tools: weather, web_search]
+    B --> C{Input Valid?}
+    C -- Yes --> D[Execute weather Logic]
+    C -- No --> E[Return Error]
+    D --> F[Success Outcome]
+    F --> G[End]
+```

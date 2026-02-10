@@ -9,6 +9,19 @@ More than just restaurant management—it's a practical base for exploring the b
 
 ---
 
+## 📊 技能逻辑流 (Skill Logic Flow)
+```mermaid
+graph TD
+    A[Start] --> B[Check Tools: weather, web_search]
+    B --> C{Input Valid?}
+    C -- Yes --> D[Execute weather Logic]
+    C -- No --> E[Return Error]
+    D --> F[Success Outcome]
+    F --> G[End]
+```
+
+---
+
 ## 📂 项目组件
 ## 📂 Project Components
 
@@ -24,15 +37,27 @@ Includes Skill Builder, concept tutorials, and visual creative generation tools.
 **Physical Operations & Application**.
 Restaurant daily operations, menu management, and digital practice demos based on Agent Skills.
 
+### 3. 🏨 [秋芝酒店 (Quizhi Hotel)](./quizhi-hotel/README.md)
+**高端智能化酒店管理**。
+集成 AI 礼宾、智能客房与个性化入住体验的全新业务板块。
+**High-end Intelligent Hotel Management**.
+A new business unit integrating AI concierge, smart rooms, and personalized stay experiences.
+
 ---
 
 ## 🚀 快速开始
 ## 🚀 Quick Start
 
-在根目录下运行以下命令，启动创意控制台：
-Run the following command in the root directory to start the creative console:
+在根目录下运行以下命令，启动对应子系统：
+Run the following commands to start subsystems:
 
 ```bash
 # 启动创意引擎 / Start Creative Engine
 python3 quizhi-creative/start_here.py
+
+# 启动餐厅系统 / Start Restaurant System
+python3 quizhi-restaurant/start_here.py
+
+# 启动酒店系统 / Start Hotel System
+python3 quizhi-hotel/main.py
 ```

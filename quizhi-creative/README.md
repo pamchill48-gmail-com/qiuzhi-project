@@ -1,7 +1,7 @@
 # 秋芝创意 (Quizhi Creative)
 # Quizhi Creative
 
-一个用于设计和理解 Agent Skills 的创意套件。
+一个用于设计 and 理解 Agent Skills 的创意套件。
 A creative suite for designing and understanding Agent Skills.
 
 ---
@@ -44,9 +44,8 @@ The application is organized into the following clear sections:
 
 ---
 
-## 📊 逻辑展示 Logic Visualization
+## 🌤️ 天气技能逻辑展示 (Weather Skill Logic Visualization)
 
-### 🌤️ 天气技能逻辑流 (Weather Skill Logic Flow)
 ```mermaid
 graph TD
     A[Start] --> B[Check Tools: weather, web_search]
@@ -57,7 +56,10 @@ graph TD
     F --> G[End]
 ```
 
-### 🍌 纳米香蕉画图逻辑流 (Nano Banana Art Logic Flow)
+---
+
+## 🍌 纳米香蕉画图逻辑展示 (Nano Banana Art Logic Visualization)
+
 ```mermaid
 graph TD
     A[Start] --> B[Check API Key]

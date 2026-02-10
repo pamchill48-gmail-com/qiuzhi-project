@@ -12,11 +12,32 @@ from datetime import datetime
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
 
+def get_display_width(text):
+    import unicodedata
+    width = 0
+    for char in text:
+        if unicodedata.east_asian_width(char) in ('F', 'W'):
+            width += 2
+        else:
+            width += 1
+    return width
+
 def display_header():
-    print("╔" + "═" * 60 + "╗")
-    print("║" + " " * 18 + "秋芝创意 (Quizhi Creative)" + " " * 18 + "║")
-    print("║" + " " * 15 + "Agent Skills Guide & Builder" + " " * 15 + "║")
-    print("╚" + "═" * 60 + "╝")
+    width = 60
+    title1 = "秋芝创意 (Quizhi Creative)"
+    title2 = "Agent Skills Guide & Builder"
+    
+    print("╔" + "═" * width + "╗")
+    
+    pad1 = (width - get_display_width(title1)) // 2
+    remain1 = width - get_display_width(title1) - pad1
+    print("║" + " " * pad1 + title1 + " " * remain1 + "║")
+    
+    pad2 = (width - get_display_width(title2)) // 2
+    remain2 = width - get_display_width(title2) - pad2
+    print("║" + " " * pad2 + title2 + " " * remain2 + "║")
+    
+    print("╚" + "═" * width + "╝")
     print()
 
 def display_menu():

@@ -1,21 +1,28 @@
 # 秋芝项目 (Qiuzhi Project)
 # Qiuzhi Project
 
-秋芝餐厅的数字化品牌管理与创意生成总成。包含创意引擎与餐饮运营支持系统。
-The digital brand management and creative generation assembly for Qiuzhi Restaurant. Contains the creative engine and restaurant operation support systems.
+一个集成了 **Agent Skills 开发**、**创意生成** 与 **数字化运营** 的综合性实验平台。
+A comprehensive experimental platform integrating **Agent Skills development**, **creative generation**, and **digital operations**.
+
+不仅仅是餐厅管理，更是探索 AI Agent 能力边界的实战基地。
+More than just restaurant management—it's a practical base for exploring the boundaries of AI Agent capabilities.
 
 ---
 
 ## 📂 项目组件
 ## 📂 Project Components
 
-### 1. 🎨 [秋芝创意引擎 (Qiuzhi Creative)](./quizhi-creative/README.md)
-核心创意生成模块。负责生成营销文案、设计建议及视觉图像。
-The core creative generation module. Responsible for generating marketing copy, design suggestions, and visual images.
+### 1. 🎨 [秋芝创意 (Quizhi Creative)](./quizhi-creative/README.md)
+**Agent Skills 指南与构建引擎**。
+包含技能生成器 (Skill Builder)、概念教学及视觉创意生成工具。
+**Agent Skills Guide & Builder Engine**.
+Includes Skill Builder, concept tutorials, and visual creative generation tools.
 
-### 2. 🍽️ [秋芝餐厅运营 (Qiuzhi Restaurant)](./quizhi-restaurant/README.md)
-(子项目) 专注于餐厅日常运营与菜单管理的独立代码库。
-(Sub-project) An independent codebase focused on restaurant daily operations and menu management.
+### 2. 🍽️ [秋芝餐厅 (Quizhi Restaurant)](./quizhi-restaurant/README.md)
+**实体运营与应用落地**。
+基于 Agent Skills 的餐厅日常运营、菜单管理与数字化实战演示。
+**Physical Operations & Application**.
+Restaurant daily operations, menu management, and digital practice demos based on Agent Skills.
 
 ---
 
@@ -26,17 +33,6 @@ The core creative generation module. Responsible for generating marketing copy, 
 Run the following command in the root directory to start the creative console:
 
 ```bash
-# 安装依赖 / Install dependencies
-pip install google-genai pillow
-
-# 启动系统 / Start System
-python3 start_here.py
+# 启动创意引擎 / Start Creative Engine
+python3 quizhi-creative/start_here.py
 ```
-
----
-
-## 🔑 必要配置
-## 🔑 Configuration
-
-请确保设置了 `GOOGLE_API_KEY` 以启用 AI 功能。
-Please ensure `GOOGLE_API_KEY` is set to enable AI features.

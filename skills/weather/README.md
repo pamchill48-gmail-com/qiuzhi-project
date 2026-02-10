@@ -1,16 +1,16 @@
-# 🌤️ 天气技能 (Weather Skill) - 大宝
-# Weather Skill
+# 🌤️ 天气技能模块 (Weather Skill Module)
+# Weather Skill Module
 
-这是秋芝项目的“大宝”，负责为用户提供实时的全球天气查询服务。
-The "Big Baby" of the Qiuzhi Project, responsible for providing real-time global weather query services.
+这是秋芝项目旗下的核心技能之一，负责为用户提供实时的全球天气查询服务。
+One of the core skills of the Qiuzhi Project, providing real-time global weather query services.
 
 ---
 
 ## 🛠️ 核心功能 (Core Features)
 
 - **实时查询**：连接 Open-Meteo API 获取精准天气数据。
-- **全球支持**：支持北京、上海、洛杉矶、悉尼等多个主要城市。
-- **极客展示**：通过 Xray 隧道抓取数据，以硬核 ASCII Art 形式展现。
+- **全球支持**：内置多座国际都市坐标，支持全球范围搜索。
+- **硬核展示**：结合 Xray 隧道与 ASCII Art，提供极客风交互体验。
 
 ---
 

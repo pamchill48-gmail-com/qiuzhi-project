@@ -31,11 +31,14 @@
 - **Data Format**: `.md` (Markdown) becoming the new "compiled code" for natural language processing eras.
 
 # Project Management & Deployment
-## GitHub Repositories (The "3 Machines" Rule)
+## GitHub Repositories (The "4 Machines" Rule)
 - **genmini61-gmail-com** (Standard):
   - Repo: `qiuzhi-project`
   - Path: `qiuzhi-project/`
 - **pamchill48-gmail-com** (Standard):
+  - Repo: `qiuzhi-project`
+  - Path: `qiuzhi-project/`
+- **chillrnb559-cpu** (Standard):
   - Repo: `qiuzhi-project`
   - Path: `qiuzhi-project/`
 - **junelieat941-sys** (**Special** - Restaurant):
